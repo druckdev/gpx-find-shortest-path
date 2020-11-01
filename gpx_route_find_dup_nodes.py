@@ -10,6 +10,7 @@ import gpxpy
 from geopy.distance import distance
 import numpy as np
 
+
 def route_length(route):
     p1 = route.points[0]
     length = 0
@@ -20,8 +21,10 @@ def route_length(route):
         p1 = p2
     return length
 
+
 def equal(p1, p2):
     return (p1.latitude, p1.longitude) == (p2.latitude, p2.longitude)
+
 
 def main(file_name):
     if sys.argv == ['']:
@@ -35,8 +38,8 @@ def main(file_name):
     gpx = gpxpy.parse(gpx_file)
 
     numRoutes = len(gpx.routes)
-    foundStarts = np.zeros(numRoutes, dtype = bool)
-    foundEnds = np.zeros(numRoutes, dtype = bool)
+    foundStarts = np.zeros(numRoutes, dtype=bool)
+    foundEnds = np.zeros(numRoutes, dtype=bool)
 
     for i in range(numRoutes):
         start1 = gpx.routes[i].points[0]
@@ -73,6 +76,7 @@ def main(file_name):
         input("Press ENTER to exit.\n")
     else:
         return gpx
+
 
 if __name__ == "__main__":
     main("")
