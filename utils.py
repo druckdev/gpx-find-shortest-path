@@ -4,15 +4,11 @@ from geopy.distance import distance
 
 # offset determines from which index the distance should be calculated
 # (if negative it is to which index)
-def route_length(route, offset=0):
+def route_length(route, off=0):
     length = 0
-    if offset < 0:
-        p1 = route.points[0]
-        points = route.points[1:offset]
-    else:
-        p1 = route.points[offset]
-        points = route.points[offset + 1:]
-    for p2 in points:
+    points = route.points[off:] if off >= 0 else route.points[:off]
+    p1 = points[0]
+    for p2 in points[1:]:
         c1 = (p1.latitude, p1.longitude)
         c2 = (p2.latitude, p2.longitude)
         length += distance(c1, c2).km
