@@ -5,7 +5,7 @@
 # https://pypi.org/project/gpxpy/
 # https://networkx.github.io/documentation/
 
-# Dependencies: gpxpy, networkx, numpy, pyyaml
+# Dependencies: gpxpy, networkx, pyyaml
 # Install all with 'pip install <package>'
 
 # To plot the graph see:

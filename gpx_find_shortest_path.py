@@ -5,7 +5,7 @@
 # https://pypi.org/project/gpxpy/
 # https://networkx.github.io/documentation/
 
-# Dependencies: geopy, gpxpy, networkx, numpy
+# Dependencies: geopy, gpxpy, networkx
 # Install all with 'pip install <package>'
 
 # To plot the graph see:
@@ -56,24 +56,26 @@ def main(file_name=None, gpx=None):
             sys.exit(1)
         gpx = gpxpy.parse(gpx_file)
 
-    src_dest_names = []
-    src_dest = []
+    names = []
+    indices = []
     for node in ["source", "target"]:
-        src_dest_names.append(input('Please specify ' + node + ' node by name: '))
-        src_dest.append(utils.find_by_name(gpx, src_dest_names[-1]))
-        if src_dest[-1] == (-1, -1):
+        names.append(input('Please specify ' + node + ' node by name: '))
+        indices.append(utils.find_by_name(gpx, names[-1]))
+        if indices[-1] == (-1, -1):
             input('No node with this name was found')
             sys.exit(1)
 
-    for route, point in src_dest:
+    nodes = [utils.point_to_coords(gpx.routes[i].points[j]) for i, j in indices]
+
+    # Note: This might "destroy" `indices` as the routes change.
+    for route, point in indices:
         split_route(gpx, route, point)
 
-    src_dest_idx = []
-    G, *src_dest_idx = utils.build_graph(gpx, *src_dest_names)
+    G = utils.build_graph(gpx)
 
     print('Shortest path:')
-    print(nx.shortest_path(G, *src_dest_idx, 'weight'))
-    print(nx.shortest_path_length(G, *src_dest_idx, 'weight'), 'km')
+    print(nx.shortest_path(G, *nodes, 'len'))
+    print(nx.shortest_path_length(G, *nodes, 'len'), 'km')
 
     if file_name is not None:
         return G

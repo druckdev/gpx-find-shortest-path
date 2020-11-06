@@ -1,5 +1,4 @@
 import gpxpy
-import numpy as np
 import networkx as nx
 from geopy.distance import distance
 
@@ -18,9 +17,14 @@ def route_length(route, off=0):
     return length
 
 
+# Return a tuple containing the coordinates of a given point
+def point_to_coords(p):
+    return (p.latitude, p.longitude)
+
+
 # Compares latitude and longitude of two points
 def pos_equal(p1, p2):
-    return (p1.latitude, p1.longitude) == (p2.latitude, p2.longitude)
+    return point_to_coords(p1) == point_to_coords(p2)
 
 
 # Compares two points by name
@@ -56,63 +60,24 @@ def print_adj(G):
         print()
 
 
-def build_graph(gpx, src=None, dest=None):
-    src_idx = -1
-    dest_idx = -1
+# Converts a gpx object into a graph that uses the coordinates of the points as
+# nodes and the routes as edges with their length as weight.
+def build_graph(gpx, weight="len"):
     G = nx.Graph()
 
-    numRoutes = len(gpx.routes)
-    nodes = np.zeros(numRoutes * 2, dtype=object)
+    for i in range(len(gpx.routes)):
+        route = gpx.routes[i]
+        length = route_length(route)
 
-    for i in range(numRoutes):
-        start1 = gpx.routes[i].points[0]
-        end1 = gpx.routes[i].points[-1]
+        # Use the coordinates of the points so that routes with a common start
+        # or end point use the same node in the graph
+        points = [route.points[i] for i in [0, -1]]
+        edge = tuple(point_to_coords(p) for p in points)
 
-        # create new nodes for start and end if they do not exist yet
-        if nodes[i * 2] == 0:
-            G.add_node(i * 2, id=(i * 2), name=start1.name)
-            nodes[i * 2] = G.nodes()[i * 2]
-
-            if src is not None and start1.name == src:
-                src_idx = i * 2
-            if dest is not None and start1.name == dest:
-                dest_idx = i * 2
-        if nodes[i * 2 + 1] == 0:
-            G.add_node(i * 2 + 1, id=(i * 2 + 1), name=end1.name)
-            nodes[i * 2 + 1] = G.nodes()[i * 2 + 1]
-
-            if src is not None and end1.name == src:
-                src_idx = i * 2 + 1
-            if dest is not None and end1.name == dest:
-                dest_idx = i * 2 + 1
-
-        # Create edge between start and end node with length of the route as
-        # weight If edge exits already update its weight if the new one is
-        # smaller (At this point an edge can only exist already if there are
-        # two routes with the same starting and end point)
-        id_start = nodes[i * 2]['id']
-        id_end = nodes[i * 2 + 1]['id']
-        if G.has_edge(id_start, id_end):
-            G.edges[id_start, id_end]['weight'] = min(route_length(gpx.routes[i]), G.edges[id_start, id_end]['weight'])
+        # Create edge or update length if it exists already
+        if G.has_edge(*edge):
+            G.edges[edge][weight] = min(length, G.edges[edge][weight])
         else:
-            G.add_edge(id_start, id_end, weight=route_length(gpx.routes[i]))
+            G.add_edge(*edge, len=length)
 
-        # Iterate over the remaining routes and compare start and end points
-        for j in range(i + 1, numRoutes):
-            start2 = gpx.routes[j].points[0]
-            end2 = gpx.routes[j].points[-1]
-
-            if pos_equal(start1, start2):
-                nodes[j * 2] = nodes[i * 2]
-            elif pos_equal(start1, end2):
-                nodes[j * 2 + 1] = nodes[i * 2]
-
-            if pos_equal(end1, start2):
-                nodes[j * 2] = nodes[i * 2 + 1]
-            elif pos_equal(end1, end2):
-                nodes[j * 2 + 1] = nodes[i * 2 + 1]
-
-    if src is None and dest is None:
-        return G
-    else:
-        return G, src_idx, dest_idx
+    return G
