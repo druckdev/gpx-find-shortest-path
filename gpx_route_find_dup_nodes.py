@@ -2,7 +2,7 @@
 # https://janakiev.com/blog/gps-points-distance-python/
 # https://pypi.org/project/gpxpy/
 
-# Dependencies: numpy, geopy, gpxpy, pyyaml
+# Dependencies: numpy, geopy, gpxpy
 # Install all with "pip install <package>"
 
 import sys
@@ -55,9 +55,12 @@ def main(file_name):
             print(gpx.routes[i].name + " (" + start1.name + ") starting point is alone")
         if not foundEnds[i]:
             print(gpx.routes[i].name + " (" + end1.name + ") end point is alone")
-    # for route in gpx.routes:
-    #     length = utils.route_length(route)
-    #     print(route.name, ":", length, "km")
+    print()
+
+    for route in gpx.routes:
+        length = utils.route_length(route)
+        print(route.name, ":", length, "km")
+
     if sys.argv != ['']:
         input("Press ENTER to exit.\n")
     else:
