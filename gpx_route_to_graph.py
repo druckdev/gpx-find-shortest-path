@@ -15,7 +15,8 @@
 # https://networkx.github.io/documentation/stable/reference/algorithms/shortest_paths.html
 
 import sys
-import gpxpy
+
+from gpxpy import parse as gpx_parse
 import networkx as nx
 
 import utils
@@ -29,7 +30,7 @@ def main():
     else:
         input('No input file found.')
         sys.exit(1)
-    gpx = gpxpy.parse(gpx_file)
+    gpx = gpx_parse(gpx_file)
     G = utils.build_graph(gpx)
     nx.write_yaml(G, GRAPH_FILE_NAME)
     input(GRAPH_FILE_NAME + ' written. Press ENTER to exit.')

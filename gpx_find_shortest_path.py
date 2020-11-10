@@ -16,17 +16,18 @@
 
 import sys
 
-import gpxpy
-import networkx as nx
+from gpxpy.gpx import GPX
+from gpxpy.gpx import GPXRoute
+from gpxpy import parse as gpx_parse
+from networkx import shortest_path
+from networkx import shortest_path_length
 
 import utils
 
 
-# Split a route in a gpx object into two routes
-# It's behaviour might differ from your expectations:
-# Both will still hold the point at the given index so that no information is
-# lost
-def split_route(gpx, route_idx, point_idx):
+# Split a route in a gpx object on a point so that two new routes connected by
+# the point are created. The old route will be deleted.
+def split_route(gpx: GPX, route_idx: int, point_idx: int):
     # Check if split is necessary
     if (
         point_idx > 0 and
@@ -37,7 +38,7 @@ def split_route(gpx, route_idx, point_idx):
         route_name += ' - Part 2'
         route_points = gpx.routes[route_idx].points
         # Create new route with the second 'half' of the points
-        new_route = gpxpy.gpx.GPXRoute(name=route_name)
+        new_route = GPXRoute(name=route_name)
         new_route.points = route_points[point_idx:]
         # Delete second 'half' in original route
         del gpx.routes[route_idx].points[point_idx + 1:]
@@ -45,7 +46,7 @@ def split_route(gpx, route_idx, point_idx):
         gpx.routes.insert(route_idx + 1, new_route)
 
 
-def main(file_name=None, gpx=None):
+def main(gpx: GPX = None, file_name: str = None):
     if gpx is None:
         if file_name is not None:
             gpx_file = open(file_name, 'r')
@@ -54,7 +55,7 @@ def main(file_name=None, gpx=None):
         else:
             input('No input file found.')
             sys.exit(1)
-        gpx = gpxpy.parse(gpx_file)
+        gpx = gpx_parse(gpx_file)
 
     names = []
     indices = []
@@ -65,7 +66,7 @@ def main(file_name=None, gpx=None):
             input('No node with this name was found')
             sys.exit(1)
 
-    nodes = [utils.point_to_coords(gpx.routes[i].points[j]) for i, j in indices]
+    nodes = [utils.point_to_pos(gpx.routes[i].points[j]) for i, j in indices]
 
     # Note: This might "destroy" `indices` as the routes change.
     for route, point in indices:
@@ -74,8 +75,8 @@ def main(file_name=None, gpx=None):
     G = utils.build_graph(gpx)
 
     print('Shortest path:')
-    print(nx.shortest_path(G, *nodes, 'len'))
-    print(nx.shortest_path_length(G, *nodes, 'len'), 'km')
+    print(shortest_path(G, *nodes, 'len'))
+    print(shortest_path_length(G, *nodes, 'len'), 'km')
 
     if file_name is not None:
         return G

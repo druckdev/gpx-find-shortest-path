@@ -6,14 +6,16 @@
 # Install all with "pip install <package>"
 
 import sys
-import gpxpy
+from typing import Optional
+
+from gpxpy import parse as gpx_parse
 import numpy as np
 
 import utils
 
 
-def main(file_name):
-    if sys.argv == ['']:
+def main(file_name: Optional[str] = None):
+    if file_name is not None:
         gpx_file = open(file_name, 'r')
     elif len(sys.argv) > 1:
         gpx_file = open(sys.argv[1], 'r')
@@ -21,7 +23,7 @@ def main(file_name):
         input("No input file found.\n")
         sys.exit(1)
 
-    gpx = gpxpy.parse(gpx_file)
+    gpx = gpx_parse(gpx_file)
 
     numRoutes = len(gpx.routes)
     foundStarts = np.zeros(numRoutes, dtype=bool)
@@ -68,4 +70,4 @@ def main(file_name):
 
 
 if __name__ == "__main__":
-    main("")
+    main()
