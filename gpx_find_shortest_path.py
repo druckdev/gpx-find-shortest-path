@@ -16,11 +16,9 @@
 
 import sys
 
-from gpxpy.gpx import GPX
-from gpxpy.gpx import GPXRoute
 from gpxpy import parse as gpx_parse
-from networkx import shortest_path
-from networkx import shortest_path_length
+from gpxpy.gpx import GPX, GPXRoute
+from networkx import shortest_path, shortest_path_length
 
 import utils
 

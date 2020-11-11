@@ -1,8 +1,6 @@
-from gpxpy.gpx import GPX
-from gpxpy.gpx import GPXRoute
-from gpxpy.gpx import GPXRoutePoint
-from networkx import Graph
 from geopy.distance import distance
+from gpxpy.gpx import GPX, GPXRoute, GPXRoutePoint
+from networkx import Graph
 
 
 # offset determines from which index the distance should be calculated
