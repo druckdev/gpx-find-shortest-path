@@ -75,7 +75,9 @@ def main(gpx: GPX = None, file_name: str = None):
     G = utils.build_graph(gpx)
 
     print('Shortest path:')
-    print(shortest_path(G, *nodes, 'len'))
+    path = shortest_path(G, *nodes, 'len')
+    print(path)
+    print(list(G.nodes[node]["name"] for node in path))
     print(shortest_path_length(G, *nodes, 'len'), 'km')
 
     if file_name is not None:

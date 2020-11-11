@@ -74,7 +74,13 @@ def build_graph(gpx: GPX, weight: str = "len"):
         # Use the coordinates of the points so that routes with a common start
         # or end point use the same node in the graph
         points = [route.points[i] for i in [0, -1]]
-        edge = tuple(point_to_pos(p) for p in points)
+
+        # Create the coordinates as tuple as node (as it is hashable) with the
+        # nodes name stored in the nodes attributes.
+        edge = []
+        for p in points:
+            edge.append(point_to_pos(p))
+            G.add_node(edge[-1], name=p.name)
 
         # Create edge or update length if it exists already
         if G.has_edge(*edge):
