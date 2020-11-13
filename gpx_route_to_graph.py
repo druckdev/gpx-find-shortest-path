@@ -24,6 +24,7 @@ import utils
 GRAPH_FILE_NAME = "graph.yml"
 
 
+# Build a graph of a given gpx file and write it to a yaml file.
 def main():
     if len(sys.argv) > 1:
         gpx_file = open(sys.argv[1], 'r')
