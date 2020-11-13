@@ -3,16 +3,15 @@ from gpxpy.gpx import GPX, GPXRoute, GPXRoutePoint
 from networkx import Graph
 
 
-# offset determines from which index the distance should be calculated
-# (if negative it is to which index)
+# Calculate the length of a gpx route in kilometers
+# `off` determines from which index on the distance should be calculated.
+# (If negative it is to which index, exclusive)
 def route_length(route: GPXRoute, off: int = 0):
     length = 0
     points = route.points[off:] if off >= 0 else route.points[:off]
     p1 = points[0]
     for p2 in points[1:]:
-        c1 = (p1.latitude, p1.longitude)
-        c2 = (p2.latitude, p2.longitude)
-        length += distance(c1, c2).km
+        length += distance(point_to_pos(p1), point_to_pos(p2)).km
         p1 = p2
     return length
 
