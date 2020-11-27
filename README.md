@@ -1,4 +1,4 @@
-# gpx_find_shortest_path
+# gpx-find-shortest-path
 
 This is a short script written in python3 able to find a shortest path between
 two points in a GPX file.
