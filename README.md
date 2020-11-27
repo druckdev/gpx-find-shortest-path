@@ -44,6 +44,6 @@ recalculate the graph again.
 
 ## `utils.py`
 
-This is utils library containing some of the core functionality like the
+This is a utils library containing some of the core functionality like the
 `build_graph()` as well as some very basic helper functions that are not used
 (anymore) but could be useful in different scenarios.
